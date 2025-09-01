@@ -230,7 +230,7 @@ async function handleLogin(e) {
             showError(data.error);
         }
     } catch (error) {
-        showError('Login failed. Please try again.');
+        showError('Sign in failed. Please try again.');
     }
 }
 
@@ -263,7 +263,7 @@ async function handleSignup(e) {
             showError(data.error);
         }
     } catch (error) {
-        showError('Signup failed. Please try again.');
+        showError('Sign up failed. Please try again.');
     }
 }
 
@@ -273,7 +273,7 @@ async function logout() {
         currentUser = null;
         window.location.href = '/';
     } catch (error) {
-        console.error('Logout failed:', error);
+        console.error('Sign out failed:', error);
     }
 }
 

@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static('public'));
 app.use(session({
-    secret: 'zubari-ai-secret-key',
+    secret: 'zubari-ai-secret-key-2025',
     resave: false,
     saveUninitialized: false,
     cookie: { secure: false }
@@ -30,7 +30,7 @@ db.serialize(() => {
         email TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
         subscription_type TEXT DEFAULT 'free',
-        subscription_expires DATE,
+        subscription_expires DATETIME,
         ai_requests_used INTEGER DEFAULT 0,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )`);
@@ -63,23 +63,24 @@ const requireAuth = (req, res, next) => {
     if (req.session.userId) {
         next();
     } else {
-        res.redirect('/login.html');
+        res.status(401).json({ error: 'Authentication required' });
     }
 };
 
 // Check subscription middleware
 const checkSubscription = (req, res, next) => {
     if (!req.session.userId) {
-        return res.redirect('/login.html');
+        return res.status(401).json({ error: 'Authentication required' });
     }
 
     db.get('SELECT * FROM users WHERE id = ?', [req.session.userId], (err, user) => {
         if (err || !user) {
-            return res.redirect('/login.html');
+            return res.status(401).json({ error: 'User not found' });
         }
 
         const now = new Date();
         const isSubscribed = user.subscription_type === 'premium' && 
+                           user.subscription_expires &&
                            new Date(user.subscription_expires) > now;
 
         if (!isSubscribed && user.ai_requests_used >= 5) {
@@ -109,6 +110,10 @@ app.get('/signup.html', (req, res) => {
 
 app.get('/premium.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'premium.html'));
+});
+
+app.get('/tools.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'tools.html'));
 });
 
 // Authentication routes
@@ -154,6 +159,29 @@ app.post('/api/login', async (req, res) => {
 app.post('/api/logout', (req, res) => {
     req.session.destroy();
     res.json({ success: true });
+});
+
+// User status route
+app.get('/api/user-status', requireAuth, (req, res) => {
+    db.get('SELECT email, subscription_type, subscription_expires, ai_requests_used FROM users WHERE id = ?', 
+           [req.session.userId], (err, user) => {
+        if (err || !user) {
+            return res.json({ error: 'User not found' });
+        }
+        
+        const now = new Date();
+        const isSubscribed = user.subscription_type === 'premium' && 
+                           user.subscription_expires &&
+                           new Date(user.subscription_expires) > now;
+        
+        res.json({
+            email: user.email,
+            subscriptionType: user.subscription_type,
+            isSubscribed,
+            requestsUsed: user.ai_requests_used,
+            requestsRemaining: isSubscribed ? 'unlimited' : Math.max(0, 5 - user.ai_requests_used)
+        });
+    });
 });
 
 // AI service routes
@@ -329,28 +357,6 @@ app.post('/api/verify-payment', requireAuth, (req, res) => {
     });
 });
 
-// User status route
-app.get('/api/user-status', requireAuth, (req, res) => {
-    db.get('SELECT email, subscription_type, subscription_expires, ai_requests_used FROM users WHERE id = ?', 
-           [req.session.userId], (err, user) => {
-        if (err || !user) {
-            return res.json({ error: 'User not found' });
-        }
-        
-        const now = new Date();
-        const isSubscribed = user.subscription_type === 'premium' && 
-                           new Date(user.subscription_expires) > now;
-        
-        res.json({
-            email: user.email,
-            subscriptionType: user.subscription_type,
-            isSubscribed,
-            requestsUsed: user.ai_requests_used,
-            requestsRemaining: isSubscribed ? 'unlimited' : Math.max(0, 5 - user.ai_requests_used)
-        });
-    });
-});
-
 app.listen(PORT, () => {
-    console.log(`Zubari AI Study Buddy server running on http://localhost:${PORT}`);
+    console.log(`Zubari AI Studdy Buddy server running on http://localhost:${PORT}`);
 });

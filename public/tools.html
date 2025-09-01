@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Tools - Zubari AI Study Buddy</title>
     <title>AI Tools - Zubari AI Studdy Buddy</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -14,11 +13,11 @@
                 <h2>Zubari AI Studdy Buddy</h2>
             </div>
             <div class="nav-auth">
-                <button id="loginBtn" class="auth-btn">Log In</button>
-                <button id="signupBtn" class="auth-btn primary">Sign Up</button>
+                <button id="loginBtn" class="auth-btn">Sign in</button>
+                <button id="signupBtn" class="auth-btn primary">Sign up</button>
                 <div id="userMenu" class="user-menu hidden">
                     <span id="userEmail"></span>
-                    <button id="logoutBtn" class="auth-btn">Logout</button>
+                    <button id="logoutBtn" class="auth-btn">Sign out</button>
                 </div>
             </div>
         </div>
@@ -33,7 +32,7 @@
         </div>
 
         <!-- Question Generator -->
-        <div id="questionGenerator" class="tool-section hidden">
+        <div id="question-generator" class="tool-section hidden">
             <div class="form-container">
                 <h2>Generate Questions</h2>
                 <form id="questionForm">
@@ -78,22 +77,24 @@
         </div>
 
         <!-- Study Plan Generator -->
-        <div id="studyPlan" class="tool-section hidden">
+        <div id="study-plan" class="tool-section hidden">
             <div class="form-container">
                 <h2>Create Study Plan</h2>
                 <form id="studyPlanForm">
                     <div class="form-group">
+                        <label for="syllabus">Syllabus</label>
                         <input type="text" id="syllabus" name="syllabus" placeholder="Enter syllabus" required>
                     </div>
                     <div class="form-group">
+                        <label for="topics">Topics</label>
                         <input type="text" id="topics" name="topics" placeholder="Enter topics" required>
                     </div>
                     <div class="form-group">
-                        <label for="startDate">Start Date:</label>
+                        <label for="startDate">Start Date</label>
                         <input type="date" id="startDate" name="startDate" required>
                     </div>
                     <div class="form-group">
-                        <label for="deadline">Deadline:</label>
+                        <label for="deadline">Deadline</label>
                         <input type="date" id="deadline" name="deadline" required>
                     </div>
                     <button type="submit" class="submit-btn">Generate Plan</button>
@@ -110,7 +111,7 @@
     <!-- Upgrade Modal -->
     <div id="upgradeModal" class="modal hidden">
         <div class="modal-content">
-            <span class="close">&times;</span>
+            <button class="close">&times;</button>
             <h2>Upgrade Required</h2>
             <p>You've reached your free tier limit of 5 AI requests per month.</p>
             <p>Upgrade to Premium for unlimited access!</p>
